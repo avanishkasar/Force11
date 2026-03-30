@@ -1,8 +1,8 @@
 ![OperatorAI](assets/OperatorAI-Header.png)
 
-# Force11
+# Operator AI
 
-Force11 is a real-time emergency call triage dashboard.
+Operator AI is a real-time emergency call triage dashboard.
 It streams live call transcripts, extracts key entities, and helps operators prioritize response faster.
 
 ## Architecture
