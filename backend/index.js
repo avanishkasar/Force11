@@ -110,6 +110,7 @@ wss.on('connection', (ws) => {
 });
 
 app.get('/', (_, res) => res.send('Twilio Live Stream App'));
+app.get('/health', (_, res) => res.status(200).send('ok'));
 
 app.post('/', async (req, res) => {
   const callSid = req.body.CallSid;
@@ -139,7 +140,8 @@ app.post('/', async (req, res) => {
   );
 });
 
-server.listen(8080, () => console.log('Listening on Port 8080'));
+const PORT = Number(process.env.PORT || 8080);
+server.listen(PORT, () => console.log(`Listening on Port ${PORT}`));
 
 const exitHandler = (exitCode = 0) =>
   function () {

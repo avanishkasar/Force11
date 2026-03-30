@@ -75,3 +75,46 @@ npm run dev
 - This repository intentionally omits private environment values.
 - Use your own Firebase project and service credentials.
 - Keep `frontend/.env` and `backend/.env` local only.
+
+## Deploy On Railway
+
+Deploy this repo as two Railway services from the same GitHub repository.
+
+If Railway is configured at repository root, this repo includes root deployment files (`railway.toml`, `package.json`, `Procfile`) that run the backend from `backend/`.
+
+### Backend Service
+
+1. In Railway, create a new service from this repo.
+2. Recommended: set Root Directory to `backend`.
+3. If you keep Root Directory as repo root, Railway will still run backend correctly using root `railway.toml`.
+4. Add environment variables:
+	- `ASSEMBLYAI_API_KEY`
+	- `FIREBASE_API_KEY`
+	- `FIREBASE_AUTH_DOMAIN`
+	- `FIREBASE_DATABASE_URL`
+	- `FIREBASE_PROJECT_ID`
+	- `FIREBASE_STORAGE_BUCKET`
+	- `FIREBASE_MESSAGING_SENDER_ID`
+	- `FIREBASE_APP_ID`
+	- `MAPS_API_KEY`
+	- `HUGGINGFACE_API_KEY`
+	- `HUGGINGFACE_API_KEY2`
+
+Backend uses Railway `PORT` automatically and exposes health check at `/health`.
+
+### Frontend Service
+
+1. Create another Railway service from the same repo.
+2. Set Root Directory to `frontend`.
+3. Railway will use `frontend/railway.toml` to build and start Vite preview.
+4. Add environment variables:
+	- `VITE_GOOGLE_API_KEY`
+	- `VITE_FIREBASE_API_KEY`
+	- `VITE_FIREBASE_AUTH_DOMAIN`
+	- `VITE_FIREBASE_DATABASE_URL`
+	- `VITE_FIREBASE_PROJECT_ID`
+	- `VITE_FIREBASE_STORAGE_BUCKET`
+	- `VITE_FIREBASE_MESSAGING_SENDER_ID`
+	- `VITE_FIREBASE_APP_ID`
+
+After deployment, set frontend/base API URLs to the backend Railway public URL where required.

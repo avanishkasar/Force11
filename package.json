@@ -1,0 +1,8 @@
+{
+  "name": "force11",
+  "private": true,
+  "scripts": {
+    "start": "npm --prefix backend start",
+    "build": "npm --prefix backend ci"
+  }
+}
