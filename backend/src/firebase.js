@@ -2,7 +2,7 @@ const { initializeApp } = require('firebase/app');
 const { getDatabase, ref, set, update, get } = require('firebase/database');
 const { getCoordinates, analyzeTranscript, getNamedEntities } = require('./utils');
 
-const app = initializeApp({
+const firebaseConfig = {
   apiKey: process.env.FIREBASE_API_KEY || '',
   authDomain: process.env.FIREBASE_AUTH_DOMAIN || '',
   databaseURL: process.env.FIREBASE_DATABASE_URL || '',
@@ -10,12 +10,31 @@ const app = initializeApp({
   storageBucket: process.env.FIREBASE_STORAGE_BUCKET || '',
   messagingSenderId: process.env.FIREBASE_MESSAGING_SENDER_ID || '',
   appId: process.env.FIREBASE_APP_ID || '',
-});
+};
 
-const db = getDatabase(app);
+const requiredKeys = ['apiKey', 'authDomain', 'databaseURL', 'projectId', 'storageBucket', 'messagingSenderId', 'appId'];
+const missingKeys = requiredKeys.filter((key) => !firebaseConfig[key]);
+
+let db = null;
+
+if (missingKeys.length) {
+  console.warn(`[Firebase] Disabled. Missing env vars: ${missingKeys.join(', ')}`);
+} else {
+  const app = initializeApp(firebaseConfig);
+  db = getDatabase(app);
+}
+
+const isDbReady = () => {
+  if (db) {
+    return true;
+  }
+
+  console.warn('[Firebase] Ignoring write/read because database is not configured.');
+  return false;
+};
 
 module.exports.initCallData = (callSid, payload) => {
-  if (!callSid) {
+  if (!callSid || !isDbReady()) {
     return;
   }
 
@@ -35,6 +54,10 @@ module.exports.initCallData = (callSid, payload) => {
 
 const updateNamedEntitiesWithExpensiveModel = (transcript, callSid) =>
   getNamedEntities(transcript, true).then(async ({ name, location }) => {
+    if (!isDbReady()) {
+      return;
+    }
+
     const updates = {};
     if (name) {
       console.log('[Expensive Model] Found name:\t', name);
@@ -55,7 +78,7 @@ const updateNamedEntitiesWithExpensiveModel = (transcript, callSid) =>
   });
 
 module.exports.updateOnDisconnect = async (callSid) => {
-  if (!callSid) {
+  if (!callSid || !isDbReady()) {
     return;
   }
 
@@ -107,7 +130,7 @@ module.exports.updateOnDisconnect = async (callSid) => {
 };
 
 module.exports.updateTranscript = (callSid, streamSid, transcript, priority) => {
-  if (!callSid) {
+  if (!callSid || !isDbReady()) {
     return;
   }
 
