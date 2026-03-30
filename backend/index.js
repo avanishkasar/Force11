@@ -109,7 +109,14 @@ wss.on('connection', (ws) => {
   });
 });
 
-app.get('/', (_, res) => res.send('Twilio Live Stream App'));
+app.get('/', (_, res) => {
+  res.status(200).json({
+    service: 'Force11 Backend',
+    status: 'ok',
+    health: '/health',
+    note: 'This is the backend API/Twilio webhook service. Deploy frontend as a separate Railway service for UI.',
+  });
+});
 app.get('/health', (_, res) => res.status(200).send('ok'));
 
 app.post('/', async (req, res) => {
